@@ -6,8 +6,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        string connectionString =
-            "server=localhost;database=world;user=root;password=100score@500yrsago;";
+        string connectionString =    
+            "server=localhost;database=world;user=worlduser;password=world123;";
 
         Console.WriteLine("Attempting to connect to MySQL...");
 
