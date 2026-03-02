@@ -9,6 +9,8 @@ class Program
         string connectionString =    
             "server=localhost;database=world;user=worlduser;password=world123;";
 
+        connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION");
+
         Console.WriteLine("Attempting to connect to MySQL...");
 
         using (var connection = new MySqlConnection(connectionString))
