@@ -491,11 +491,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\lapto\\Documents\\ProjectFresh\\ReportApp\\ReportApp.csproj",
+      "projectUniqueName": "C:\\Users\\lapto\\source\\repos\\Project\\week_2\\ReportApp\\ReportApp.csproj",
       "projectName": "ReportApp",
-      "projectPath": "C:\\Users\\lapto\\Documents\\ProjectFresh\\ReportApp\\ReportApp.csproj",
+      "projectPath": "C:\\Users\\lapto\\source\\repos\\Project\\week_2\\ReportApp\\ReportApp.csproj",
       "packagesPath": "C:\\Users\\lapto\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\lapto\\Documents\\ProjectFresh\\ReportApp\\obj\\",
+      "outputPath": "C:\\Users\\lapto\\source\\repos\\Project\\week_2\\ReportApp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\lapto\\AppData\\Roaming\\NuGet\\NuGet.Config",
