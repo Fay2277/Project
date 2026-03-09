@@ -33,22 +33,35 @@ class WorldReports
             switch (choice)
             {
                 case "1":
-                    Execute(@"SELECT country.Code,
-                                     country.Name,
-                                     country.Continent,
-                                     country.Region,
-                                     country.Population,
-                                     city.Name AS Capital
-                              FROM country
-                              LEFT JOIN city ON country.Capital = city.ID
-                              ORDER BY country.Population DESC");
+                    Execute(@"use world;SELECT country.Code,
+                 country.Name,
+                 country.Continent,
+                 country.Region,
+                 country.Population,
+                 city.Name AS Capital
+          FROM country
+          LEFT JOIN city ON country.Capital = city.ID
+
+          UNION
+
+          SELECT country.Code,
+                 country.Name,
+                 country.Continent,
+                 country.Region,
+                 country.Population,
+                 city.Name AS Capital
+          FROM country
+          RIGHT JOIN city ON country.Capital = city.ID
+          WHERE country.Code IS NOT NULL
+
+          ORDER BY Population DESC");
                     break;
 
                 case "2":
                     ShowOptions("SELECT DISTINCT Continent FROM country");
                     Console.Write("Enter Continent: ");
                     string continent = Console.ReadLine();
-                    Execute(@"SELECT country.Code,
+                    Execute(@"use world; SELECT country.Code,
                                      country.Name,
                                      country.Continent,
                                      country.Region,
@@ -64,7 +77,7 @@ class WorldReports
                     ShowOptions("SELECT DISTINCT Region FROM country");
                     Console.Write("Enter Region: ");
                     string region = Console.ReadLine();
-                    Execute(@"SELECT country.Code,
+                    Execute(@"use world; SELECT country.Code,
                                      country.Name,
                                      country.Continent,
                                      country.Region,
@@ -77,7 +90,7 @@ class WorldReports
                     break;
 
                 case "4":
-                    Execute(@"SELECT city.Name,
+                    Execute(@"use world; SELECT city.Name,
                                      country.Name AS Country,
                                      city.District,
                                      city.Population
@@ -90,7 +103,7 @@ class WorldReports
                     ShowOptions("SELECT DISTINCT Continent FROM country");
                     Console.Write("Enter Continent: ");
                     continent = Console.ReadLine();
-                    Execute(@"SELECT city.Name,
+                    Execute(@"use world; SELECT city.Name,
                                      country.Name AS Country,
                                      city.District,
                                      city.Population
@@ -104,7 +117,7 @@ class WorldReports
                     ShowOptions("SELECT DISTINCT Region FROM country");
                     Console.Write("Enter Region: ");
                     region = Console.ReadLine();
-                    Execute(@"SELECT city.Name,
+                    Execute(@"use world; SELECT city.Name,
                                      country.Name AS Country,
                                      city.District,
                                      city.Population
@@ -117,7 +130,7 @@ class WorldReports
                 case "7":
                     Console.Write("Enter Country Code: ");
                     string code = Console.ReadLine();
-                    Execute(@"SELECT city.Name,
+                    Execute(@"use world; SELECT city.Name,
                                      country.Name AS Country,
                                      city.District,
                                      city.Population
@@ -131,7 +144,7 @@ class WorldReports
                     ShowOptions("SELECT DISTINCT District FROM city");
                     Console.Write("Enter District: ");
                     string district = Console.ReadLine();
-                    Execute(@"SELECT city.Name,
+                    Execute(@"use world; SELECT city.Name,
                                      country.Name AS Country,
                                      city.District,
                                      city.Population
@@ -142,7 +155,7 @@ class WorldReports
                     break;
 
                 case "9":
-                    Execute(@"SELECT city.Name,
+                    Execute(@"use world; SELECT city.Name,
                                      country.Name AS Country,
                                      city.Population
                               FROM city
@@ -154,7 +167,7 @@ class WorldReports
                     ShowOptions("SELECT DISTINCT Continent FROM country");
                     Console.Write("Enter Continent: ");
                     continent = Console.ReadLine();
-                    Execute(@"SELECT city.Name,
+                    Execute(@"use world; SELECT city.Name,
                                      country.Name AS Country,
                                      city.Population
                               FROM city
@@ -167,7 +180,7 @@ class WorldReports
                     ShowOptions("SELECT DISTINCT Region FROM country");
                     Console.Write("Enter Region: ");
                     region = Console.ReadLine();
-                    Execute(@"SELECT city.Name,
+                    Execute(@"use world; SELECT city.Name,
                                      country.Name AS Country,
                                      city.Population
                               FROM city
@@ -205,7 +218,13 @@ class WorldReports
         while (reader.Read())
         {
             found = true;
-            Console.WriteLine(reader[0]);
+
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                Console.Write(reader[i] + " | ");
+            }
+
+            Console.WriteLine();
         }
 
         if (!found)
