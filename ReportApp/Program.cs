@@ -232,7 +232,10 @@ class WorldReports
             }
         }
     }
+    static void selectdata()
+    {
 
+    }
     static void Execute(string query, string value = null) //executes the select statement that has been chosen
     {
         MySqlConnection con = new MySqlConnection(cs);
