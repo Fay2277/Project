@@ -14,16 +14,19 @@ class WorldReports
             Console.WriteLine("1  - All Countries in World");
             Console.WriteLine("2  - Countries in Continent");
             Console.WriteLine("3  - Countries in Region");
+            Console.WriteLine("---------------------------------------------------");
 
             Console.WriteLine("4  - All Cities in World");
             Console.WriteLine("5  - Cities in Continent");
             Console.WriteLine("6  - Cities in Region");
             Console.WriteLine("7  - Cities in Country");
             Console.WriteLine("8  - Cities in District");
+            Console.WriteLine("---------------------------------------------------");
 
             Console.WriteLine("9  - All Capital Cities in World");
             Console.WriteLine("10 - Capital Cities in Continent");
             Console.WriteLine("11 - Capital Cities in Region");
+            Console.WriteLine("---------------------------------------------------");
 
             Console.WriteLine("12 - Population of World");
             Console.WriteLine("13 - Population of Continent");
@@ -32,19 +35,20 @@ class WorldReports
 
             Console.WriteLine("16 - Population of District");
             Console.WriteLine("17 - Population of City");
-            Console.WriteLine("18 - Population of Citizens not living in Cities"); //in country region and continent
+            Console.WriteLine("---------------------------------------------------");
 
-            Console.WriteLine("19 - Country Report"); //code name continent population region capital
-            Console.WriteLine("20 - City Report"); //name country district population
-            //capital city report with name country population
-            //population report with The name of the continent/region/country.
-            //The total population of the continent/ region / country.
-            //The total population of the continent/ region / country living in cities(including a %).
-            //The total population of the continent/ region / country not living in cities(including a%).
+            Console.WriteLine("18 - Population of Citizens not living in Cities in the World"); //in country region and continent, use a % for both in and out of cities
+            Console.WriteLine("---------------------------------------------------");
 
-               //add options for language 
+            Console.WriteLine("22 - Country Report"); //code name continent population region capital
+            Console.WriteLine("23 - City Report"); //name country district population
+            Console.WriteLine("24 - Capital City Report");//name country population
+            Console.WriteLine("---------------------------------------------------");
+            //Top N populated, read the user input for number and limit the results to the number the user gave
+            //example of select statement with limit: SELECT column FROM table LIMIT row_count;
+            //add options for language 
 
-               Console.WriteLine("0  - Exit");
+            Console.WriteLine("0  - Exit");
 
             Console.Write("Select option: ");
             string choice = Console.ReadLine();
@@ -208,7 +212,16 @@ class WorldReports
                               ORDER BY city.Population DESC", region);
                     break;
                 case "12":
-                     
+                    //12 - 16 population of world, continent, region, country, district, city
+                    break;
+
+                case "17":
+                    //17-22 population percentage of living in city and not in city, for world, country, region, continent
+                    break;
+
+                case "22":
+                    //22-24 country, city and capital city reports
+                    break;
 
                 case "0":
                     return;
