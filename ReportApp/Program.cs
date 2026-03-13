@@ -1,13 +1,13 @@
 ﻿using System;
 using MySql.Data.MySqlClient;
-
+// use sql db in file
 class WorldReports
 {
-    static string cs = "server=localhost;database=world;uid=worlduser;pwd=world123;";
+    static string cs = "server=localhost;database=world;uid=worlduser;pwd=world123;"; //log in to sql to use db
 
     static void Main()
     {
-        while (true)
+        while (true) //loop to keep app running
         {
             Console.WriteLine("\n===== WORLD REPORTING SYSTEM =====");
 
@@ -49,7 +49,7 @@ class WorldReports
             Console.Write("Select option: ");
             string choice = Console.ReadLine();
 
-            switch (choice)
+            switch (choice) //decision statement to get search db and select statements
             {
                 case "1":
                     Execute(@"use world;SELECT country.Code,
@@ -220,10 +220,10 @@ class WorldReports
         }
     }
 
-    static void Execute(string query, string value = null)
+    static void Execute(string query, string value = null) //executes the select statement that has been chosen
     {
         MySqlConnection con = new MySqlConnection(cs);
-        con.Open();
+        con.Open(); //new sql object to open the connection
 
         MySqlCommand cmd = new MySqlCommand(query, con);
 
@@ -248,7 +248,7 @@ class WorldReports
             Console.WriteLine();
         }
 
-        if (!found)
+        if (!found) //if data is unavailable
         {
             Console.WriteLine("No data found. Please check your input.");
         }
@@ -256,7 +256,7 @@ class WorldReports
         con.Close();
     }
 
-    static void ShowOptions(string query)
+    static void ShowOptions(string query) //to show options the user can choose from
     {
         MySqlConnection con = new MySqlConnection(cs);
         con.Open();
