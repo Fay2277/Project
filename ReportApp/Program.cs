@@ -1,13 +1,13 @@
 ﻿using System;
 using MySql.Data.MySqlClient;
-
+// use sql db in file
 class WorldReports
 {
-    static string cs = "server=localhost;database=world;uid=worlduser;pwd=world123;";
+    static string cs = "server=localhost;database=world;uid=worlduser;pwd=world123;"; //log in to sql to use db
 
     static void Main()
     {
-        while (true)
+        while (true) //loop to keep app running
         {
             Console.WriteLine("\n===== WORLD REPORTING SYSTEM =====");
 
@@ -25,12 +25,31 @@ class WorldReports
             Console.WriteLine("10 - Capital Cities in Continent");
             Console.WriteLine("11 - Capital Cities in Region");
 
-            Console.WriteLine("0  - Exit");
+            Console.WriteLine("12 - Population of World");
+            Console.WriteLine("13 - Population of Continent");
+            Console.WriteLine("14 - Population of Region");
+            Console.WriteLine("15 - Population of Country");
+
+            Console.WriteLine("16 - Population of District");
+            Console.WriteLine("17 - Population of City");
+            Console.WriteLine("18 - Population of Citizens not living in Cities"); //in country region and continent
+
+            Console.WriteLine("19 - Country Report"); //code name continent population region capital
+            Console.WriteLine("20 - City Report"); //name country district population
+            //capital city report with name country population
+            //population report with The name of the continent/region/country.
+            //The total population of the continent/ region / country.
+            //The total population of the continent/ region / country living in cities(including a %).
+            //The total population of the continent/ region / country not living in cities(including a%).
+
+               //add options for language 
+
+               Console.WriteLine("0  - Exit");
 
             Console.Write("Select option: ");
             string choice = Console.ReadLine();
 
-            switch (choice)
+            switch (choice) //decision statement to get search db and select statements
             {
                 case "1":
                     Execute(@"use world;SELECT country.Code,
@@ -188,6 +207,8 @@ class WorldReports
                               WHERE country.Region = @value
                               ORDER BY city.Population DESC", region);
                     break;
+                case "12":
+                     
 
                 case "0":
                     return;
@@ -199,10 +220,10 @@ class WorldReports
         }
     }
 
-    static void Execute(string query, string value = null)
+    static void Execute(string query, string value = null) //executes the select statement that has been chosen
     {
         MySqlConnection con = new MySqlConnection(cs);
-        con.Open();
+        con.Open(); //new sql object to open the connection
 
         MySqlCommand cmd = new MySqlCommand(query, con);
 
@@ -227,7 +248,7 @@ class WorldReports
             Console.WriteLine();
         }
 
-        if (!found)
+        if (!found) //if data is unavailable
         {
             Console.WriteLine("No data found. Please check your input.");
         }
@@ -235,7 +256,7 @@ class WorldReports
         con.Close();
     }
 
-    static void ShowOptions(string query)
+    static void ShowOptions(string query) //to show options the user can choose from
     {
         MySqlConnection con = new MySqlConnection(cs);
         con.Open();
