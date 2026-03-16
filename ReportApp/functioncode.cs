@@ -3,28 +3,28 @@ using MySql.Data.MySqlClient;
 
 class WorldReports
 {
-    // Database connection string
+    // Database connection 
     static string cs = "server=localhost;database=world;uid=worlduser;pwd=world123;";
 
 static void Main()
 {
-    while (true)
+    while (true) //loop 
     {
         Console.WriteLine("\n===== WORLD REPORTING SYSTEM =====");
-        Console.WriteLine("1 - Countries: World   | 2 - Continent | 3 - Region");
-        Console.WriteLine("4 - Cities: World      | 5 - Continent | 6 - Region | 7 - Country | 8 - District");
-        Console.WriteLine("9 - Capitals: World    | 10 - Continent | 11 - Region");
-        Console.WriteLine("12 - Total Pop: World  | 13 - Continent | 14 - Region | 15 - Country | 16 - District | 17 - City");
-        Console.WriteLine("18 - Pop % (Urban/Rural): World | 19 - Continent | 20 - Region | 21 - Country");
-        Console.WriteLine("22 - Language Report (Speakers) | 23 - Country Report | 24 - City Report | 25 - Capital Report");
+        Console.WriteLine("1 - Countries in World   | 2 - Continent | 3 - Region");
+        Console.WriteLine("4 - Cities in World      | 5 - Continent | 6 - Region | 7 - Country | 8 - District");
+        Console.WriteLine("9 - Capitals in World    | 10 - Continent | 11 - Region");
+        Console.WriteLine("12 - Total Population in World  | 13 - Continent | 14 - Region | 15 - Country | 16 - District | 17 - City");
+        Console.WriteLine("18 - Urban/Rural Population in World | 19 - Continent | 20 - Region | 21 - Country");
+        Console.WriteLine("22 - Language Report | 23 - Country Report | 24 - City Report | 25 - Capital Report");
         Console.WriteLine("0 - Exit");
         Console.Write("\nSelect option: ");
         
         string choice = Console.ReadLine();
-        if (choice == "0") break;
+        if (choice == "0") break; // exit loop
 
         int? limit = null;
-        // Apply "Top N" logic to all listing reports (1 through 11)
+        // allow user to choose whether to limit the amount of results, default order by population
         if (int.TryParse(choice, out int c) && c >= 1 && c <= 11)
         {
             Console.Write("Enter number of results (Leave blank for ALL): ");
@@ -34,7 +34,7 @@ static void Main()
 
         switch (choice)
         {
-            // --- COUNTRY LISTS ---
+            // select country from world, continent and region
             case "1": GetReport("Country", null, null, limit); break;
             case "2": 
                 ShowOptions("SELECT DISTINCT Continent FROM country");
@@ -47,7 +47,7 @@ static void Main()
                 GetReport("Country", "Region = @val", Console.ReadLine(), limit); 
                 break;
 
-            // --- CITY LISTS ---
+            // select city from world, region, country and district
             case "4": GetReport("City", null, null, limit); break;
             case "5": 
                 ShowOptions("SELECT DISTINCT Continent FROM country");
@@ -69,7 +69,7 @@ static void Main()
                 GetReport("City", "District = @val", Console.ReadLine(), limit); 
                 break;
 
-            // --- CAPITAL LISTS ---
+            // select capital cities from world, continent and region
             case "9": GetReport("Capital", null, null, limit); break;
             case "10": 
                 ShowOptions("SELECT DISTINCT Continent FROM country");
@@ -82,7 +82,7 @@ static void Main()
                 GetReport("Capital", "Region = @val", Console.ReadLine(), limit); 
                 break;
 
-            // --- POPULATION TOTALS ---
+            // select population from world, continent, region, country, district and city
             case "12": Execute("SELECT SUM(CAST(Population AS SIGNED)) AS 'World Population' FROM country"); break;
             case "13":
                 ShowOptions("SELECT DISTINCT Continent FROM country");
@@ -107,7 +107,7 @@ static void Main()
                 Execute("SELECT Name, Population FROM city WHERE Name = @val", Console.ReadLine());
                 break;
 
-            // --- URBAN / RURAL % REPORTS ---
+            // select the population of city vs not in city from world, continent, region and country
             case "18": GetReport("PopPct", null, null); break; // World
             case "19": 
                 ShowOptions("SELECT DISTINCT Continent FROM country");
@@ -124,21 +124,21 @@ static void Main()
                 GetReport("PopPct", "Name = @val", Console.ReadLine());
                 break;
 
-            // --- SPECIAL REPORTS ---
+            // specific reports for language, country, city and capital city
             case "22":
-                Console.Write("Enter Language (e.g. Spanish): ");
+                Console.Write("Enter Language: ");
                 GetReport("Language", "Language = @val", Console.ReadLine());
                 break;
             case "23": GetReport("Country", null, null); break;
             case "24": GetReport("City", null, null); break;
             case "25": GetReport("Capital", null, null); break;
 
-            default: Console.WriteLine("Invalid selection."); break;
+            default: Console.WriteLine("Invalid selection."); break; //if option is invalid
         }
     }
 }
 
-
+//function to select the query that will be inserted into the database
     static void GetReport(string type, string condition, string value, int? limit = null)
     {
         string sql = "";
@@ -146,13 +146,13 @@ static void Main()
         {
             case "Country":
                 sql = "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital FROM country LEFT JOIN city ON country.Capital = city.ID";
-                break;
+                break; //select from country
             case "City":
                 sql = "SELECT city.Name, country.Name AS Country, city.District, city.Population FROM city JOIN country ON city.CountryCode = country.Code";
-                break;
+                break; //select from city
             case "Capital":
                 sql = "SELECT city.Name, country.Name AS Country, city.Population FROM city JOIN country ON city.ID = country.Capital";
-                break;
+                break; //select capital from country
             case "PopPct":
                 sql = @"SELECT country.Name, country.Continent, country.Region, country.Population AS TotalPop, 
                         COALESCE(city_sums.InCities, 0) AS UrbanPop, 
@@ -162,13 +162,13 @@ static void Main()
                         FROM country 
                         LEFT JOIN (SELECT CountryCode, SUM(Population) AS InCities FROM city GROUP BY CountryCode) city_sums 
                         ON country.Code = city_sums.CountryCode";
-                break;
+                break; //select population queries
             case "Language":
                 sql = @"SELECT country.Name AS Country, countrylanguage.Language, 
                         CONCAT(countrylanguage.Percentage, '%') AS 'Percent',
                         FLOOR((countrylanguage.Percentage / 100) * country.Population) AS TotalSpeakers
                         FROM countrylanguage JOIN country ON countrylanguage.CountryCode = country.Code";
-                break;
+                break; //select language queries
         }
 
         // Wrap the base query to allow filtering by continent, region, or language
@@ -179,7 +179,7 @@ static void Main()
 
         Execute(sql, value);
     }
-
+//function to execute the query and do the output
     static void Execute(string query, string val = null)
     {
         try 
@@ -204,7 +204,7 @@ static void Main()
         }
         catch (Exception ex) { Console.WriteLine("Error: " + ex.Message); }
     }
-
+//function to show options such as continent and region
     static void ShowOptions(string query)
     {
         using (var con = new MySqlConnection(cs)) {
