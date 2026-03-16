@@ -77,7 +77,7 @@ class WorldReports
           RIGHT JOIN city ON country.Capital = city.ID
           WHERE country.Code IS NOT NULL
 
-          ORDER BY Population DESC");
+          ORDER BY Population DESC"); //selects all countries from world
                     break;
 
                 case "2":
@@ -94,7 +94,7 @@ class WorldReports
                               LEFT JOIN city ON country.Capital = city.ID
                               WHERE country.Continent = @value
                               ORDER BY country.Population DESC", continent);
-                    break;
+                    break; //selects all countries from continent
 
                 case "3":
                     ShowOptions("SELECT DISTINCT Region FROM country");
@@ -110,7 +110,7 @@ class WorldReports
                               LEFT JOIN city ON country.Capital = city.ID
                               WHERE country.Region = @value
                               ORDER BY country.Population DESC", region);
-                    break;
+                    break; //select all countries from region
 
                 case "4":
                     Execute(@"use world; SELECT city.Name,
@@ -120,7 +120,7 @@ class WorldReports
                               FROM city
                               JOIN country ON city.CountryCode = country.Code
                               ORDER BY city.Population DESC");
-                    break;
+                    break; //select all cities in world
 
                 case "5":
                     ShowOptions("SELECT DISTINCT Continent FROM country");
@@ -134,7 +134,7 @@ class WorldReports
                               JOIN country ON city.CountryCode = country.Code
                               WHERE country.Continent = @value
                               ORDER BY city.Population DESC", continent);
-                    break;
+                    break; //select all cities in continent
 
                 case "6":
                     ShowOptions("SELECT DISTINCT Region FROM country");
@@ -148,7 +148,7 @@ class WorldReports
                               JOIN country ON city.CountryCode = country.Code
                               WHERE country.Region = @value
                               ORDER BY city.Population DESC", region);
-                    break;
+                    break; //select all cities in region
 
                 case "7":
                     Console.Write("Enter Country Code: ");
@@ -161,7 +161,7 @@ class WorldReports
                               JOIN country ON city.CountryCode = country.Code
                               WHERE country.Code = @value
                               ORDER BY city.Population DESC", code);
-                    break;
+                    break; //select all cities in country
 
                 case "8":
                     ShowOptions("SELECT DISTINCT District FROM city");
@@ -175,7 +175,7 @@ class WorldReports
                               JOIN country ON city.CountryCode = country.Code
                               WHERE city.District = @value
                               ORDER BY city.Population DESC", district);
-                    break;
+                    break; //select all cities in district
 
                 case "9":
                     Execute(@"use world; SELECT city.Name,
@@ -184,7 +184,7 @@ class WorldReports
                               FROM city
                               JOIN country ON city.ID = country.Capital
                               ORDER BY city.Population DESC");
-                    break;
+                    break; //select all capital cities
 
                 case "10":
                     ShowOptions("SELECT DISTINCT Continent FROM country");
@@ -197,7 +197,7 @@ class WorldReports
                               JOIN country ON city.ID = country.Capital
                               WHERE country.Continent = @value
                               ORDER BY city.Population DESC", continent);
-                    break;
+                    break; //select all capital cities in continent
 
                 case "11":
                     ShowOptions("SELECT DISTINCT Region FROM country");
@@ -210,8 +210,9 @@ class WorldReports
                               JOIN country ON city.ID = country.Capital
                               WHERE country.Region = @value
                               ORDER BY city.Population DESC", region);
-                    break;
+                    break; //select all capital cities in region
                 case "12":
+                    Execute(@"use world; SELECT 
                     //12 - 16 population of world, continent, region, country, district, city
                     break;
 
