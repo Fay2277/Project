@@ -214,20 +214,37 @@ class WorldReports
                 case "12":
                     Execute(@"use world; SELECT 
                        //select population of world
+                    break;   
                 case "13":
                        //select population of continent
+                    break;        
                 case "14":
                        //select population of region
+                    break;        
                 case "15":
                        //select population of country
+                    break;        
                 case "16":
                        //select population of district
+                    break;        
                 case "17":
                        //select population of city
                     break;
                             
                 case "18":
-                    //18-22 population percentage of living in city and not in city, for world, country, region, continent
+                    //population percentage of living in city and not in city
+                    break;        
+                case "19":
+                    //population percentage for world   
+                    break;        
+                case "20":
+                    //population percentage for country
+                    break;        
+                case "21":
+                    //population percentage for region 
+                    break;        
+                case "22":
+                    //population percentage for continent        
                     break;
 
                 case "23":
