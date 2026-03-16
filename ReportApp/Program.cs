@@ -38,6 +38,9 @@ class WorldReports
             Console.WriteLine("---------------------------------------------------");
 
             Console.WriteLine("18 - Population of Citizens not living in Cities in the World"); //in country region and continent, use a % for both in and out of cities
+            Console.WriteLine("19 - Population of Citizens in country ");
+            Console.WriteLine("20 - Population of Citizens in region");
+            Console.WriteLine("21 - Population of Citizens in continent");
             Console.WriteLine("---------------------------------------------------");
 
             Console.WriteLine("22 - Country Report"); //code name continent population region capital
