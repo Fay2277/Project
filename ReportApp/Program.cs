@@ -1,457 +1,223 @@
 ﻿using System;
 using MySql.Data.MySqlClient;
-// import MySQL library so C# can talk to the database
 
-// main class for the program
 class WorldReports
 {
-    // connection string used to connect to the MySQL database
+    // Database connection string
     static string cs = "server=localhost;database=world;uid=worlduser;pwd=world123;";
 
     static void Main()
     {
-        // infinite loop so the menu keeps showing until user exits
         while (true)
         {
             Console.WriteLine("\n===== WORLD REPORTING SYSTEM =====");
+            Console.WriteLine("1 - Countries: World   | 2 - Continent | 3 - Region");
+            Console.WriteLine("4 - Cities: World      | 5 - Continent | 6 - Region | 7 - Country | 8 - District");
+            Console.WriteLine("9 - Capitals: World    | 10 - Continent | 11 - Region");
+            Console.WriteLine("12 - Total Pop: World  | 13 - Continent | 14 - Region | 15 - Country | 16 - District | 17 - City");
+            Console.WriteLine("18 - Pop % (Urban/Rural): World | 19 - Continent | 20 - Region | 21 - Country");
+            Console.WriteLine("22 - Language Report (Speakers) | 23 - Country Report | 24 - City Report | 25 - Capital Report");
+            Console.WriteLine("0 - Exit");
+            Console.Write("\nSelect option: ");
 
-            // menu options the user can choose
-            Console.WriteLine("1  - All Countries in World");
-            Console.WriteLine("2  - Countries in Continent");
-            Console.WriteLine("3  - Countries in Region");
+            string choice = Console.ReadLine();
+            if (choice == "0") break;
 
-            Console.WriteLine("4  - All Cities in World");
-            Console.WriteLine("5  - Cities in Continent");
-            Console.WriteLine("6  - Cities in Region");
-            Console.WriteLine("7  - Cities in Country");
-            Console.WriteLine("8  - Cities in District");
+            int? limit = null;
+            // Apply "Top N" logic to all listing reports (1 through 11)
+            if (int.TryParse(choice, out int c) && c >= 1 && c <= 11)
+            {
+                Console.Write("Enter number of results (Leave blank for ALL): ");
+                string nInput = Console.ReadLine();
+                if (int.TryParse(nInput, out int n)) limit = n;
+            }
 
-            Console.WriteLine("9  - All Capital Cities in World");
-            Console.WriteLine("10 - Capital Cities in Continent");
-            Console.WriteLine("11 - Capital Cities in Region");
-
-            Console.WriteLine("12 - Population of World");
-            Console.WriteLine("13 - Population of Continent");
-            Console.WriteLine("14 - Population of Region");
-            Console.WriteLine("15 - Population of Country");
-
-            Console.WriteLine("16 - Population of District");
-            Console.WriteLine("17 - Population of City");
-            Console.WriteLine("18 - Population of Citizens not living in Cities");
-
-            Console.WriteLine("19 - Country Report");
-            Console.WriteLine("20 - City Report");
-
-            Console.WriteLine("0  - Exit");
-
-            // ask the user to select an option
-            Console.Write("Select option: ");
-            string? choice = Console.ReadLine();
-
-            // switch statement decides what query to run based on user choice
             switch (choice)
             {
-                case "1":
-                    // show all countries in the world with their capital
-                    Execute(@"use world;SELECT country.Code,
-                 country.Name,
-                 country.Continent,
-                 country.Region,
-                 country.Population,
-                 city.Name AS Capital
-          FROM country
-          LEFT JOIN city ON country.Capital = city.ID
-
-          UNION
-
-          SELECT country.Code,
-                 country.Name,
-                 country.Continent,
-                 country.Region,
-                 country.Population,
-                 city.Name AS Capital
-          FROM country
-          RIGHT JOIN city ON country.Capital = city.ID
-          WHERE country.Code IS NOT NULL
-
-          ORDER BY Population DESC");
-                    break;
-
+                // --- COUNTRY LISTS ---
+                case "1": GetReport("Country", null, null, limit); break;
                 case "2":
-                    // show available continents first
                     ShowOptions("SELECT DISTINCT Continent FROM country");
-
-                    // ask user to enter continent
                     Console.Write("Enter Continent: ");
-                    string? continent = Console.ReadLine();
-
-                    // query countries in the selected continent
-                    Execute(@"use world; SELECT country.Code,
-                                     country.Name,
-                                     country.Continent,
-                                     country.Region,
-                                     country.Population,
-                                     city.Name AS Capital
-                              FROM country
-                              LEFT JOIN city ON country.Capital = city.ID
-                              WHERE country.Continent = @value
-                              ORDER BY country.Population DESC", continent);
+                    GetReport("Country", "Continent = @val", Console.ReadLine(), limit);
                     break;
-
                 case "3":
-                    // show available regions
                     ShowOptions("SELECT DISTINCT Region FROM country");
-
                     Console.Write("Enter Region: ");
-                    string? region = Console.ReadLine();
-
-                    // query countries in the selected region
-                    Execute(@"use world; SELECT country.Code,
-                                     country.Name,
-                                     country.Continent,
-                                     country.Region,
-                                     country.Population,
-                                     city.Name AS Capital
-                              FROM country
-                              LEFT JOIN city ON country.Capital = city.ID
-                              WHERE country.Region = @value
-                              ORDER BY country.Population DESC", region);
+                    GetReport("Country", "Region = @val", Console.ReadLine(), limit);
                     break;
 
-                case "4":
-                    // show all cities in the world
-                    Execute(@"use world; SELECT city.Name,
-                                     country.Name AS Country,
-                                     city.District,
-                                     city.Population
-                              FROM city
-                              JOIN country ON city.CountryCode = country.Code
-                              ORDER BY city.Population DESC");
-                    break;
-
+                // --- CITY LISTS ---
+                case "4": GetReport("City", null, null, limit); break;
                 case "5":
-                    // show continent options
                     ShowOptions("SELECT DISTINCT Continent FROM country");
-
                     Console.Write("Enter Continent: ");
-                    continent = Console.ReadLine();
-
-                    // show cities in the chosen continent
-                    Execute(@"use world; SELECT city.Name,
-                                     country.Name AS Country,
-                                     city.District,
-                                     city.Population
-                              FROM city
-                              JOIN country ON city.CountryCode = country.Code
-                              WHERE country.Continent = @value
-                              ORDER BY city.Population DESC", continent);
+                    GetReport("City", "Continent = @val", Console.ReadLine(), limit);
                     break;
-
                 case "6":
-                    // show region options
                     ShowOptions("SELECT DISTINCT Region FROM country");
-
                     Console.Write("Enter Region: ");
-                    region = Console.ReadLine();
-
-                    // show cities in the chosen region
-                    Execute(@"use world; SELECT city.Name,
-                                     country.Name AS Country,
-                                     city.District,
-                                     city.Population
-                              FROM city
-                              JOIN country ON city.CountryCode = country.Code
-                              WHERE country.Region = @value
-                              ORDER BY city.Population DESC", region);
+                    GetReport("City", "Region = @val", Console.ReadLine(), limit);
                     break;
-
                 case "7":
-                    // ask user to type a country code
-                    Console.Write("Enter Country Code: ");
-                    string? code = Console.ReadLine();
-
-                    // show cities in that country
-                    Execute(@"use world; SELECT city.Name,
-                                     country.Name AS Country,
-                                     city.District,
-                                     city.Population
-                              FROM city
-                              JOIN country ON city.CountryCode = country.Code
-                              WHERE country.Code = @value
-                              ORDER BY city.Population DESC", code);
+                    Console.Write("Enter Country Name: ");
+                    GetReport("City", "Country = @val", Console.ReadLine(), limit);
                     break;
-
                 case "8":
-                    // show district options
-                    ShowOptions("SELECT DISTINCT District FROM city");
-
+                    ShowOptions("SELECT DISTINCT District FROM city LIMIT 20");
                     Console.Write("Enter District: ");
-                    string? district = Console.ReadLine();
-
-                    // show cities in selected district
-                    Execute(@"use world; SELECT city.Name,
-                                     country.Name AS Country,
-                                     city.District,
-                                     city.Population
-                              FROM city
-                              JOIN country ON city.CountryCode = country.Code
-                              WHERE city.District = @value
-                              ORDER BY city.Population DESC", district);
+                    GetReport("City", "District = @val", Console.ReadLine(), limit);
                     break;
 
-                case "9":
-                    // show all capital cities in the world
-                    Execute(@"use world; SELECT city.Name,
-                                     country.Name AS Country,
-                                     city.Population
-                              FROM city
-                              JOIN country ON city.ID = country.Capital
-                              ORDER BY city.Population DESC");
-                    break;
-
+                // --- CAPITAL LISTS ---
+                case "9": GetReport("Capital", null, null, limit); break;
                 case "10":
-                    // show continent options
                     ShowOptions("SELECT DISTINCT Continent FROM country");
-
                     Console.Write("Enter Continent: ");
-                    continent = Console.ReadLine();
-
-                    // show capital cities in the continent
-                    Execute(@"use world; SELECT city.Name,
-                                     country.Name AS Country,
-                                     city.Population
-                              FROM city
-                              JOIN country ON city.ID = country.Capital
-                              WHERE country.Continent = @value
-                              ORDER BY city.Population DESC", continent);
+                    GetReport("Capital", "Continent = @val", Console.ReadLine(), limit);
                     break;
-
                 case "11":
-                    // show region options
                     ShowOptions("SELECT DISTINCT Region FROM country");
-
                     Console.Write("Enter Region: ");
-                    region = Console.ReadLine();
-
-                    // show capital cities in the region
-                    Execute(@"use world; SELECT city.Name,
-                                     country.Name AS Country,
-                                     city.Population
-                              FROM city
-                              JOIN country ON city.ID = country.Capital
-                              WHERE country.Region = @value
-                              ORDER BY city.Population DESC", region);
+                    GetReport("Capital", "Region = @val", Console.ReadLine(), limit);
                     break;
 
-                case "12":
-                    // show total population of the world
-                    Execute(@"use world; SELECT SUM(Population) AS WorldPopulation FROM country");
-                    break;
-
+                // --- POPULATION TOTALS ---
+                case "12": Execute("SELECT SUM(CAST(Population AS SIGNED)) AS 'World Population' FROM country"); break;
                 case "13":
-                    // choose continent
                     ShowOptions("SELECT DISTINCT Continent FROM country");
-
                     Console.Write("Enter Continent: ");
-                    continent = Console.ReadLine();
-
-                    // show population of that continent
-                    Execute(@"use world; SELECT Continent, SUM(Population)
-                              FROM country
-                              WHERE Continent = @value
-                              GROUP BY Continent", continent);
+                    Execute("SELECT Continent, SUM(CAST(Population AS SIGNED)) AS Population FROM country WHERE Continent = @val GROUP BY Continent", Console.ReadLine());
                     break;
-
                 case "14":
-                    // choose region
                     ShowOptions("SELECT DISTINCT Region FROM country");
-
                     Console.Write("Enter Region: ");
-                    region = Console.ReadLine();
-
-                    // show population of region
-                    Execute(@"use world; SELECT Region, SUM(Population)
-                              FROM country
-                              WHERE Region = @value
-                              GROUP BY Region", region);
+                    Execute("SELECT Region, SUM(CAST(Population AS SIGNED)) AS Population FROM country WHERE Region = @val GROUP BY Region", Console.ReadLine());
                     break;
-
                 case "15":
-                    // choose country
-                    ShowOptions("SELECT Name FROM country");
-
-                    Console.Write("Enter Country: ");
-                    string? country = Console.ReadLine();
-
-                    // show population of that country
-                    Execute(@"use world; SELECT Name, Population
-                              FROM country
-                              WHERE Name = @value", country);
+                    Console.Write("Enter Country Name: ");
+                    Execute("SELECT Name, Population FROM country WHERE Name = @val", Console.ReadLine());
                     break;
-
                 case "16":
-                    // choose district
-                    ShowOptions("SELECT DISTINCT District FROM city");
-
-                    Console.Write("Enter District: ");
-                    district = Console.ReadLine();
-
-                    // show population of district
-                    Execute(@"use world; SELECT District, SUM(Population)
-                              FROM city
-                              WHERE District = @value
-                              GROUP BY District", district);
+                    Console.Write("Enter District Name: ");
+                    Execute("SELECT District, SUM(Population) AS Population FROM city WHERE District = @val GROUP BY District", Console.ReadLine());
                     break;
-
                 case "17":
-                    // choose city
-                    ShowOptions("SELECT Name FROM city");
-
-                    Console.Write("Enter City: ");
-                    string? city = Console.ReadLine();
-
-                    // show population of city
-                    Execute(@"use world; SELECT Name, Population
-                              FROM city
-                              WHERE Name = @value", city);
+                    Console.Write("Enter City Name: ");
+                    Execute("SELECT Name, Population FROM city WHERE Name = @val", Console.ReadLine());
                     break;
 
-                case "18":
-                    // show population not living in cities for each country
-                    Execute(@"use world; SELECT 
-                                     country.Name,
-                                     country.Population AS TotalPopulation,
-                                     SUM(city.Population) AS CityPopulation,
-                                     country.Population - SUM(city.Population) AS NotInCities
-                              FROM country
-                              LEFT JOIN city ON country.Code = city.CountryCode
-                              GROUP BY country.Name");
-                    break;
-
+                // --- URBAN / RURAL % REPORTS ---
+                case "18": GetReport("PopPct", null, null); break; // World
                 case "19":
-                    // full country report
-                    Execute(@"use world; SELECT 
-                                     country.Code,
-                                     country.Name,
-                                     country.Continent,
-                                     country.Region,
-                                     country.Population,
-                                     city.Name AS Capital
-                              FROM country
-                              LEFT JOIN city ON country.Capital = city.ID
-                              ORDER BY country.Population DESC");
+                    ShowOptions("SELECT DISTINCT Continent FROM country");
+                    Console.Write("Enter Continent: ");
+                    GetReport("PopPct", "Continent = @val", Console.ReadLine());
                     break;
-
                 case "20":
-                    // full city report
-                    Execute(@"use world; SELECT 
-                                     city.Name,
-                                     country.Name AS Country,
-                                     city.District,
-                                     city.Population
-                              FROM city
-                              JOIN country ON city.CountryCode = country.Code
-                              ORDER BY city.Population DESC");
+                    ShowOptions("SELECT DISTINCT Region FROM country");
+                    Console.Write("Enter Region: ");
+                    GetReport("PopPct", "Region = @val", Console.ReadLine());
+                    break;
+                case "21":
+                    Console.Write("Enter Country Name: ");
+                    GetReport("PopPct", "Name = @val", Console.ReadLine());
                     break;
 
-                case "0":
-                    // exit program
-                    return;
-
-                default:
-                    // if user types wrong option
-                    Console.WriteLine("Invalid option.");
+                // --- SPECIAL REPORTS ---
+                case "22":
+                    Console.Write("Enter Language (e.g. Spanish): ");
+                    GetReport("Language", "Language = @val", Console.ReadLine());
                     break;
+                case "23": GetReport("Country", null, null); break;
+                case "24": GetReport("City", null, null); break;
+                case "25": GetReport("Capital", null, null); break;
+
+                default: Console.WriteLine("Invalid selection."); break;
             }
         }
     }
 
-    // method that runs a query and prints the results
-    static void Execute(string query, string? value = null)
+
+    static void GetReport(string type, string condition, string value, int? limit = null)
     {
-        // create connection to database
-        MySqlConnection con = new MySqlConnection(cs);
-        con.Open();
-
-        // create command using query
-        MySqlCommand cmd = new MySqlCommand(query, con);
-
-        // if query needs a parameter add it
-        if (value != null)
+        string sql = "";
+        switch (type)
         {
-            cmd.Parameters.AddWithValue("@value", value);
+            case "Country":
+                sql = "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital FROM country LEFT JOIN city ON country.Capital = city.ID";
+                break;
+            case "City":
+                sql = "SELECT city.Name, country.Name AS Country, city.District, city.Population FROM city JOIN country ON city.CountryCode = country.Code";
+                break;
+            case "Capital":
+                sql = "SELECT city.Name, country.Name AS Country, city.Population FROM city JOIN country ON city.ID = country.Capital";
+                break;
+            case "PopPct":
+                sql = @"SELECT country.Name, country.Continent, country.Region, country.Population AS TotalPop, 
+                        COALESCE(city_sums.InCities, 0) AS UrbanPop, 
+                        CONCAT(ROUND((COALESCE(city_sums.InCities, 0) / country.Population) * 100, 2), '%') AS 'Urban%', 
+                        (country.Population - COALESCE(city_sums.InCities, 0)) AS RuralPop,
+                        CONCAT(ROUND(((country.Population - COALESCE(city_sums.InCities, 0)) / country.Population) * 100, 2), '%') AS 'Rural%'
+                        FROM country 
+                        LEFT JOIN (SELECT CountryCode, SUM(Population) AS InCities FROM city GROUP BY CountryCode) city_sums 
+                        ON country.Code = city_sums.CountryCode";
+                break;
+            case "Language":
+                sql = @"SELECT country.Name AS Country, countrylanguage.Language, 
+                        CONCAT(countrylanguage.Percentage, '%') AS 'Percent',
+                        FLOOR((countrylanguage.Percentage / 100) * country.Population) AS TotalSpeakers
+                        FROM countrylanguage JOIN country ON countrylanguage.CountryCode = country.Code";
+                break;
         }
 
-        // run the query and get results
-        MySqlDataReader reader = cmd.ExecuteReader();
+        // Wrap the base query to allow filtering by continent, region, or language
+        if (!string.IsNullOrEmpty(condition)) sql = $"SELECT * FROM ({sql}) AS base WHERE {condition}";
 
-        bool found = false;
-        int width = 25; // width used for formatting output
+        sql += " ORDER BY " + (type == "Language" ? "TotalSpeakers" : "Population") + " DESC";
+        if (limit.HasValue) sql += $" LIMIT {limit.Value}";
 
-        // print column headers
-        for (int i = 0; i < reader.FieldCount; i++)
-        {
-            string header = reader.GetName(i);
-
-            if (header.Length > width)
-                header = header.Substring(0, width);
-
-            Console.Write(header.PadRight(width));
-        }
-
-        Console.WriteLine();
-
-        // line under headers
-        Console.WriteLine(new string('-', reader.FieldCount * width));
-
-        // read each row from database
-        while (reader.Read())
-        {
-            found = true;
-
-            for (int i = 0; i < reader.FieldCount; i++)
-            {
-                string valueText = reader[i].ToString() ?? "";
-
-                if (valueText.Length > width)
-                    valueText = valueText.Substring(0, width);
-
-                Console.Write(valueText.PadRight(width));
-            }
-
-            Console.WriteLine();
-        }
-
-        // if no data was returned
-        if (!found)
-        {
-            Console.WriteLine("No data found. Please check your input.");
-        }
-
-        // close database connection
-        con.Close();
+        Execute(sql, value);
     }
 
-    // method that shows possible options to the user
+    static void Execute(string query, string val = null)
+    {
+        try
+        {
+            using (var con = new MySqlConnection(cs))
+            {
+                con.Open();
+                using (var cmd = new MySqlCommand(query, con))
+                {
+                    if (val != null) cmd.Parameters.AddWithValue("@val", val);
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        for (int i = 0; i < r.FieldCount; i++) Console.Write($"{r.GetName(i),-18}");
+                        Console.WriteLine("\n" + new string('-', r.FieldCount * 18));
+                        while (r.Read())
+                        {
+                            for (int i = 0; i < r.FieldCount; i++) Console.Write($"{r[i],-18}");
+                            Console.WriteLine();
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("Error: " + ex.Message); }
+    }
+
     static void ShowOptions(string query)
     {
-        // connect to database
-        MySqlConnection con = new MySqlConnection(cs);
-        con.Open();
-
-        // run the query
-        MySqlCommand cmd = new MySqlCommand(query, con);
-        MySqlDataReader reader = cmd.ExecuteReader();
-
-        Console.WriteLine("\nAvailable options:");
-
-        // print each option
-        while (reader.Read())
+        using (var con = new MySqlConnection(cs))
         {
-            Console.WriteLine("- " + reader[0]);
+            con.Open();
+            using (var cmd = new MySqlCommand(query, con))
+            using (var r = cmd.ExecuteReader())
+            {
+                Console.WriteLine("\nAvailable Options:");
+                while (r.Read()) Console.WriteLine("- " + r[0]);
+                Console.WriteLine();
+            }
         }
-
-        // close connection
-        con.Close();
     }
 }
