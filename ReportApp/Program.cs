@@ -213,15 +213,25 @@ class WorldReports
                     break; //select all capital cities in region
                 case "12":
                     Execute(@"use world; SELECT 
-                    //12 - 16 population of world, continent, region, country, district, city
-                    break;
-
+                       //select population of world
+                case "13":
+                       //select population of continent
+                case "14":
+                       //select population of region
+                case "15":
+                       //select population of country
+                case "16":
+                       //select population of district
                 case "17":
-                    //17-22 population percentage of living in city and not in city, for world, country, region, continent
+                       //select population of city
+                    break;
+                            
+                case "18":
+                    //18-22 population percentage of living in city and not in city, for world, country, region, continent
                     break;
 
-                case "22":
-                    //22-24 country, city and capital city reports
+                case "23":
+                    //23-25 country, city and capital city reports
                     break;
 
                 case "0":
