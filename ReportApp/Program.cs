@@ -229,8 +229,7 @@ class WorldReports
                     break;        
                 case "17":
                        //select population of city
-                    break;
-                            
+                    break;  
                 case "18":
                     //population percentage of living in city and not in city
                     break;        
@@ -246,11 +245,15 @@ class WorldReports
                 case "22":
                     //population percentage for continent        
                     break;
-
                 case "23":
-                    //23-25 country, city and capital city reports
+                    //country report
                     break;
-
+                case "24":
+                    //city report
+                    break;
+                case "25":
+                    //capital city report
+                    break;
                 case "0":
                     return;
 
