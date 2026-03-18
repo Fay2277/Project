@@ -15,7 +15,7 @@ static void Main()
         Console.WriteLine("4 - Cities in World      | 5 - Continent | 6 - Region | 7 - Country | 8 - District");
         Console.WriteLine("9 - Capitals in World    | 10 - Continent | 11 - Region");
         Console.WriteLine("12 - Total Population in World  | 13 - Continent | 14 - Region | 15 - Country | 16 - District | 17 - City");
-        Console.WriteLine("18 - Urban/Rural Population in World | 19 - Continent | 20 - Region | 21 - Country");
+        Console.WriteLine("18 - Urban/Rural Population in World | 19 - Continent | 20 - Region | 21 - Country"); //urban is population in city, rural is population not in city
         Console.WriteLine("22 - Language Report | 23 - Country Report | 24 - City Report | 25 - Capital Report");
         Console.WriteLine("0 - Exit");
         Console.Write("\nSelect option: ");
@@ -38,7 +38,7 @@ static void Main()
             case "1": GetReport("Country", null, null, limit); break;
             case "2": 
                 ShowOptions("SELECT DISTINCT Continent FROM country");
-                Console.Write("Enter Continent: ");
+                Console.Write("Enter Continent (Ordered by Population): ");
                 GetReport("Country", "Continent = @val", Console.ReadLine(), limit); 
                 break;
             case "3": 
@@ -205,16 +205,24 @@ static void Main()
         catch (Exception ex) { Console.WriteLine("Error: " + ex.Message); }
     }
 //function to show options such as continent and region
-    static void ShowOptions(string query)
-    {
-        using (var con = new MySqlConnection(cs)) {
-            con.Open();
-            using (var cmd = new MySqlCommand(query, con))
-            using (var r = cmd.ExecuteReader()) {
-                Console.WriteLine("\nAvailable Options:");
-                while (r.Read()) Console.WriteLine("- " + r[0]);
-                Console.WriteLine();
+    //the options are made a numbered list
+   static void ShowOptions(string query)
+{
+    using (var con = new MySqlConnection(cs)) {
+        con.Open();
+        using (var cmd = new MySqlCommand(query, con))
+        using (var r = cmd.ExecuteReader()) {
+            Console.WriteLine("\nAvailable Options:");
+            
+            int i = 1; // starts the numbered list
+            while (r.Read()) 
+            {
+                Console.WriteLine(i + ". " + r[0]);
+                i++; // adds one to i for every option
             }
+            Console.WriteLine();
         }
     }
 }
+}
+
